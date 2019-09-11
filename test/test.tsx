@@ -95,7 +95,7 @@ class App extends React.Component<any, any> {
                             name={'3'}
                             url='test.html'
                             onClose={() => this.onUrlClose()}
-                            onBlocked={() => console.log("you can't block me!")}
+                            onBlocked={() => console.log('you cant block me!')}
                         />
                     )}
 
@@ -115,7 +115,6 @@ style.setAttribute('data-merge-styles', 'true')
 style.type = 'text/css'
 
 document.head.appendChild(style)
-
 ;(window as any).insertRule = (rule: string) => {
     ;(style.sheet as any).insertRule(rule, (style.sheet as any).cssRules.length)
     insertPopoutStylesheetRule(rule)
