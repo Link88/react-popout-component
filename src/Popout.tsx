@@ -1,22 +1,22 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import { PopoutProps } from './PopoutProps';
-import { generateWindowFeaturesString } from './generateWindowFeaturesString';
-import { popouts } from './popouts';
-import { crossBrowserCloneNode } from './crossBrowserCloneNode';
-import * as globalContext from './globalContext';
-import './childWindowMonitor';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { PopoutProps } from "./PopoutProps";
+import { generateWindowFeaturesString } from "./generateWindowFeaturesString";
+import { popouts } from "./popouts";
+import { crossBrowserCloneNode } from "./crossBrowserCloneNode";
+import * as globalContext from "./globalContext";
+import "./childWindowMonitor";
 
 export class Popout extends React.Component<PopoutProps, {}> {
-    private id: string;
+    private id: string | undefined;
 
-    private container: HTMLElement | null;
+    private container: HTMLElement | null | undefined;
 
     private setupAttempts = 0;
 
-    public styleElement: HTMLStyleElement | null;
+    public styleElement: HTMLStyleElement | null | undefined;
 
-    public child: Window | null;
+    public child: Window | null | undefined;
 
     private setupOnCloseHandler(id: string, child: Window) {
         // For Edge, IE browsers, the document.head might not exist here yet. We will just simply attempt again when RAF is called
@@ -26,12 +26,12 @@ export class Popout extends React.Component<PopoutProps, {}> {
         }
 
         if (child && child.document && child.document.head) {
-            const unloadScriptContainer = child.document.createElement('script');
+            const unloadScriptContainer = child.document.createElement(
+                "script"
+            );
             const onBeforeUnloadLogic = `
             window.onbeforeunload = function(e) {
-                var result = window.opener.${
-                    globalContext.id
-                }.onBeforeUnload.call(window, '${id}', e);
+                var result = window.opener.${globalContext.id}.onBeforeUnload.call(window, '${id}', e);
 
                 if (result) {
                     window.opener.${globalContext.id}.startMonitor.call(window.opener, '${id}');
@@ -68,25 +68,28 @@ export class Popout extends React.Component<PopoutProps, {}> {
 
     private setupCleanupCallbacks() {
         // Close the popout if main window is closed.
-        window.addEventListener('unload', e => this.closeChildWindowIfOpened());
+        window.addEventListener("unload", e => this.closeChildWindowIfOpened());
 
-        globalContext.set('onChildClose', (id: string) => {
+        globalContext.set("onChildClose", (id: string) => {
             if (popouts[id].props.onClose) {
                 popouts[id].props.onClose!();
             }
         });
 
-        globalContext.set('onBeforeUnload', (id: string, evt: BeforeUnloadEvent) => {
-            if (popouts[id].props.onBeforeUnload) {
-                return popouts[id].props.onBeforeUnload!(evt);
+        globalContext.set(
+            "onBeforeUnload",
+            (id: string, evt: BeforeUnloadEvent) => {
+                if (popouts[id].props.onBeforeUnload) {
+                    return popouts[id].props.onBeforeUnload!(evt);
+                }
             }
-        });
+        );
     }
 
     private setupStyleElement(child: Window) {
-        this.styleElement = child.document.createElement('style');
-        this.styleElement.setAttribute('data-this-styles', 'true');
-        this.styleElement.type = 'text/css';
+        this.styleElement = child.document.createElement("style");
+        this.styleElement.setAttribute("data-this-styles", "true");
+        this.styleElement.type = "text/css";
 
         child.document.head.appendChild(this.styleElement);
     }
@@ -98,21 +101,25 @@ export class Popout extends React.Component<PopoutProps, {}> {
             child.document.write(this.props.html);
             const head = child.document.head;
 
-            let cssText = '';
+            let cssText = "";
             let rules = null;
 
             for (let i = window.document.styleSheets.length - 1; i >= 0; i--) {
-                let styleSheet = window.document.styleSheets[i] as CSSStyleSheet;
+                let styleSheet = window.document.styleSheets[
+                    i
+                ] as CSSStyleSheet;
                 try {
                     rules = styleSheet.cssRules;
                 } catch {
                     // We're primarily looking for a security exception here.
                     // See https://bugs.chromium.org/p/chromium/issues/detail?id=775525
                     // Try to just embed the style element instead.
-                    let styleElement = child.document.createElement('link');
+                    let styleElement = child.document.createElement("link");
                     styleElement.type = styleSheet.type;
-                    styleElement.rel = 'stylesheet';
-                    styleElement.href = styleSheet.href;
+                    styleElement.rel = "stylesheet";
+                    if (styleSheet.href) {
+                        styleElement.href = styleSheet.href;
+                    }
                     head.appendChild(styleElement);
                 } finally {
                     if (rules) {
@@ -130,17 +137,19 @@ export class Popout extends React.Component<PopoutProps, {}> {
                 rules = null;
             }
 
-            const style = child.document.createElement('style');
+            const style = child.document.createElement("style");
             style.innerHTML = cssText;
 
             head.appendChild(style);
-            container = child.document.createElement('div');
+            container = child.document.createElement("div");
             container.id = id;
             child.document.body.appendChild(container);
         } else {
-            let childHtml = '<!DOCTYPE html><html><head>';
+            let childHtml = "<!DOCTYPE html><html><head>";
             for (let i = window.document.styleSheets.length - 1; i >= 0; i--) {
-                let styleSheet = window.document.styleSheets[i] as CSSStyleSheet;
+                let styleSheet = window.document.styleSheets[
+                    i
+                ] as CSSStyleSheet;
                 try {
                     const cssText = styleSheet.cssText;
                     childHtml += `<style>${cssText}</style>`;
@@ -164,7 +173,7 @@ export class Popout extends React.Component<PopoutProps, {}> {
         // Add style observer for legacy style node additions
         const observer = new MutationObserver(mutations => {
             mutations.forEach(mutation => {
-                if (mutation.type == 'childList') {
+                if (mutation.type == "childList") {
                     forEachStyleElement(mutation.addedNodes, element => {
                         child.document.head.appendChild(
                             crossBrowserCloneNode(element, child.document)
@@ -200,7 +209,7 @@ export class Popout extends React.Component<PopoutProps, {}> {
         const name = getWindowName(this.props.name!);
 
         this.child = validatePopupBlocker(
-            window.open(this.props.url || 'about:blank', name, options)
+            window.open(this.props.url || "about:blank", name, options)!
         );
 
         if (!this.child) {
@@ -215,7 +224,7 @@ export class Popout extends React.Component<PopoutProps, {}> {
     };
 
     private closeChildWindowIfOpened = () => {
-        if (isChildWindowOpened(this.child)) {
+        if (isChildWindowOpened(this.child!)) {
             this.child!.close();
 
             this.child = null;
@@ -229,7 +238,7 @@ export class Popout extends React.Component<PopoutProps, {}> {
         validateUrl(this.props.url!);
 
         if (!this.props.hidden) {
-            if (!isChildWindowOpened(this.child)) {
+            if (!isChildWindowOpened(this.child!)) {
                 this.openChildWindow();
             }
 
@@ -263,7 +272,7 @@ function validateUrl(url: string) {
         return;
     }
 
-    const parser = document.createElement('a');
+    const parser = document.createElement("a");
     parser.href = url;
 
     const current = window.location;
@@ -273,9 +282,7 @@ function validateUrl(url: string) {
         (parser.protocol && current.protocol != parser.protocol)
     ) {
         throw new Error(
-            `react-popup-component error: cross origin URLs are not supported (window=${
-                current.protocol
-            }//${current.hostname}; popout=${parser.protocol}//${parser.hostname})`
+            `react-popup-component error: cross origin URLs are not supported (window=${current.protocol}//${current.hostname}; popout=${parser.protocol}//${parser.hostname})`
         );
     }
 }
@@ -284,8 +291,8 @@ function validatePopupBlocker(child: Window) {
     if (
         !child ||
         child.closed ||
-        typeof child == 'undefined' ||
-        typeof child.closed == 'undefined'
+        typeof child == "undefined" ||
+        typeof child.closed == "undefined"
     ) {
         return null;
     }
@@ -315,7 +322,7 @@ function forEachStyleElement(
 
     for (let i = 0; i < nodeList.length; i++) {
         element = nodeList[i] as HTMLElement;
-        if (element.tagName == 'STYLE') {
+        if (element.tagName == "STYLE") {
             callback.call(scope, element, i);
         }
     }
@@ -323,6 +330,8 @@ function forEachStyleElement(
 
 function isBrowserIEOrEdge() {
     const userAgent =
-        typeof navigator != 'undefined' && navigator.userAgent ? navigator.userAgent : '';
+        typeof navigator != "undefined" && navigator.userAgent
+            ? navigator.userAgent
+            : "";
     return /Edge/.test(userAgent) || /Trident/.test(userAgent);
 }
