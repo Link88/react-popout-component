@@ -1,5 +1,5 @@
-import { Popout } from './Popout';
+import { Popout } from './Popout'
 
-const popouts: { [id: string]: Popout } = {};
+const popouts: { [id: string]: Popout } = {}
 
-export { popouts };
+export { popouts }

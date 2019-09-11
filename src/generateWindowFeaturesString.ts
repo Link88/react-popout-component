@@ -1,13 +1,11 @@
-import { WindowFeaturesOptions } from "./WindowFeaturesOptions";
+import { WindowFeaturesOptions } from './WindowFeaturesOptions'
 
-export function generateWindowFeaturesString(
-    optionsProp: Partial<WindowFeaturesOptions>
-) {
+export function generateWindowFeaturesString(optionsProp: Partial<WindowFeaturesOptions>) {
     function valueOf(value: number | boolean | undefined): string | undefined {
         if (typeof value === 'boolean') {
-            return value ? '1' : '0';
+            return value ? '1' : '0'
         } else if (value) {
-            return String(value);
+            return String(value)
         }
     }
 
@@ -22,16 +20,11 @@ export function generateWindowFeaturesString(
         scrollbars: false,
         status: false,
         toolbar: false,
-    };
+    }
 
-    options = { ...options, ...optionsProp };
+    options = { ...options, ...optionsProp }
 
-    return (Object.getOwnPropertyNames(
-        options
-    ) as (keyof WindowFeaturesOptions)[])
-        .map(
-            (key: keyof WindowFeaturesOptions) =>
-                `${key}=${valueOf(options[key])}`
-        )
-        .join(',');
+    return (Object.getOwnPropertyNames(options) as (keyof WindowFeaturesOptions)[])
+        .map((key: keyof WindowFeaturesOptions) => `${key}=${valueOf(options[key])}`)
+        .join(',')
 }

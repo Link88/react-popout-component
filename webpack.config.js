@@ -1,4 +1,4 @@
-const path = require('path');
+const path = require('path')
 
 module.exports = {
     entry: './test/test.tsx',
@@ -24,4 +24,4 @@ module.exports = {
         publicPath: 'test',
         devtoolModuleFilenameTemplate: 'http://localhost:8080/[resource-path]',
     },
-};
+}

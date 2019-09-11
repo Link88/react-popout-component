@@ -1,14 +1,14 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import MyPopout from './MyPopout';
-import { Popout } from '../src/Popout';
-import { insertPopoutStylesheetRule } from '../src/insertPopoutStylesheetRule';
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
+import MyPopout from './MyPopout'
+import { Popout } from '../src/Popout'
+import { insertPopoutStylesheetRule } from '../src/insertPopoutStylesheetRule'
 
-import './test.css';
+import './test.css'
 
 class App extends React.Component<any, any> {
     constructor(props: any) {
-        super(props);
+        super(props)
         this.state = {
             open: {
                 '0': false,
@@ -17,38 +17,38 @@ class App extends React.Component<any, any> {
                 '3': false,
             },
             message: 'Hello World!',
-        };
+        }
     }
 
     openWindow(id: string) {
-        let open = this.state.open;
-        open[id] = true;
+        let open = this.state.open
+        open[id] = true
 
-        this.setState({ open });
+        this.setState({ open })
     }
 
     closeWindow(id: string) {
-        let open = this.state.open;
-        open[id] = false;
+        let open = this.state.open
+        open[id] = false
 
-        this.setState({ open });
+        this.setState({ open })
     }
 
     onClose(id: string) {
-        let open = this.state.open;
-        open[id] = false;
+        let open = this.state.open
+        open[id] = false
 
-        this.setState({ open: open });
+        this.setState({ open: open })
     }
 
     onUrlClose() {
-        let open = this.state.open;
-        open['3'] = false;
+        let open = this.state.open
+        open['3'] = false
 
         this.setState({
             open: open,
             message: 'closed the url one',
-        });
+        })
     }
 
     changeText() {
@@ -58,11 +58,11 @@ class App extends React.Component<any, any> {
                 Math.random()
                     .toString(12)
                     .slice(2),
-        });
+        })
     }
 
     componentDidCatch(error: Error, errorInfo: any) {
-        console.log(error, errorInfo);
+        console.log(error, errorInfo)
     }
 
     render() {
@@ -78,7 +78,7 @@ class App extends React.Component<any, any> {
                                 onClose={() => this.onClose(name)}
                                 onBeforeUnload={evt => {
                                     if (name == '0') {
-                                        return 'Are you sure?!';
+                                        return 'Are you sure?!'
                                     }
                                 }}
                             />
@@ -93,7 +93,7 @@ class App extends React.Component<any, any> {
                     {this.state.open['3'] && (
                         <Popout
                             name={'3'}
-                            url="test.html"
+                            url='test.html'
                             onClose={() => this.onUrlClose()}
                             onBlocked={() => console.log("you can't block me!")}
                         />
@@ -105,20 +105,20 @@ class App extends React.Component<any, any> {
 
                 <button onClick={() => this.changeText()}>Change Text</button>
             </div>
-        );
+        )
     }
 }
 
-const style = document.createElement('style');
+const style = document.createElement('style')
 
-style.setAttribute('data-merge-styles', 'true');
-style.type = 'text/css';
+style.setAttribute('data-merge-styles', 'true')
+style.type = 'text/css'
 
-document.head.appendChild(style);
+document.head.appendChild(style)
 
-(window as any).insertRule = (rule: string) => {
-    (style.sheet as any).insertRule(rule, (style.sheet as any).cssRules.length);
-    insertPopoutStylesheetRule(rule);
-};
+;(window as any).insertRule = (rule: string) => {
+    ;(style.sheet as any).insertRule(rule, (style.sheet as any).cssRules.length)
+    insertPopoutStylesheetRule(rule)
+}
 
-ReactDOM.render(<App />, document.getElementById('test'));
+ReactDOM.render(<App />, document.getElementById('test'))
