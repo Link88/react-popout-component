@@ -4,6 +4,7 @@ export function crossBrowserCloneNode(element: HTMLElement, targetDocument: HTML
 
     if (element.hasAttributes()) {
         let attribute: Attr
+        // tslint:disable-next-line
         for (let i = 0; i < element.attributes.length; i++) {
             attribute = element.attributes[i]
             cloned.setAttribute(attribute.name, attribute.value)

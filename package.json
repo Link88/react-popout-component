@@ -2,8 +2,7 @@
     "name": "react-popout-component",
     "version": "1.8.5",
     "description": "",
-    "main": "lib/index.js",
-    "types": "lib/index.d.ts",
+    "main": "src/index.ts",
     "scripts": {
         "prettier": "prettier --write '**/*.{ts,tsx,js,jsx,css,scss,html}' !build/** !node_modules/**",
         "start": "webpack-dev-server",
@@ -35,6 +34,7 @@
         "url": "https://github.com/microsoft/react-popout-component"
     },
     "dependencies": {
-        "prettier": "^1.18.2"
+        "prettier": "^1.18.2",
+        "tslib": "^1.10.0"
     }
 }

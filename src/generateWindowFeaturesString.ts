@@ -6,6 +6,8 @@ export function generateWindowFeaturesString(optionsProp: Partial<WindowFeatures
             return value ? '1' : '0'
         } else if (value) {
             return String(value)
+        } else {
+            return undefined
         }
     }
 
@@ -24,7 +26,7 @@ export function generateWindowFeaturesString(optionsProp: Partial<WindowFeatures
 
     options = { ...options, ...optionsProp }
 
-    return (Object.getOwnPropertyNames(options) as (keyof WindowFeaturesOptions)[])
+    return (Object.getOwnPropertyNames(options) as Array<keyof WindowFeaturesOptions>)
         .map((key: keyof WindowFeaturesOptions) => `${key}=${valueOf(options[key])}`)
         .join(',')
 }
